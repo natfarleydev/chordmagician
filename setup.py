@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="chordmagician",
-    version="0.1",
+    version="0.2",
     description="A magical script to create random chords with ABC notation.",
     author="Nathanael Farley",
     author_email="nasfarley88",

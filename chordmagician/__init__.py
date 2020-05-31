@@ -44,7 +44,7 @@ def pick_random_chord(chords=CHORDS, seed=None, prev_chord=""):
     return ret_chord
 
 
-def generate_bars(no_of_bars=32, *args, **kwargs):
+def generate_bars(no_of_bars=32, *args, **kwargs) -> list:
     bars = []
     prev_chord = ""
     for _ in range(no_of_bars):
@@ -55,7 +55,11 @@ def generate_bars(no_of_bars=32, *args, **kwargs):
 
     return bars
 
-WORDS  = [
+def generate_rest_bars(no_of_bars=32, *args, **kwargs) -> list:
+    return ["z1"]*no_of_bars
+
+
+WORDS = [
     "courage",
     "bravery",
     "foolishness",
@@ -69,8 +73,10 @@ WORDS  = [
     "betrayal",
 ]
 
+
 def generate_abc_score(
     content,
+    bass_content=None,
     title=None,
     author="Chord Magician",
     reference_number=1,
@@ -79,6 +85,9 @@ def generate_abc_score(
     base_note_length="1/1",
 ):
     """ Generates an ABC score from input. """
+
+    if bass_content is None:
+        bass_content = content
 
     if title is None:
         title = random.choice(animals)
@@ -94,12 +103,24 @@ T:{title}
 M:{meter}
 L:{base_note_length}
 K:{key}
-{content}
+%%staves {{1 2}}
+V:1
+[K:{key} clef=treble]{content}
+V:2
+[K:{key} clef=bass]{bass_content}
 """
 
 
 def generate_bar(chord):
-    return f'"{chord}"  y z1 y'
+    return f'"{chord}"  z1'
+
+
 
 def main():
-    print(generate_abc_score("|" + "|".join(generate_bars(8)) + "\n" + "|".join(generate_bars(8)) + "||"))
+    print(
+        generate_abc_score(
+            "|" + "|".join(generate_bars(8)) + "\n" + "|".join(generate_bars(8)) + "||",
+            "|" + "|".join(generate_rest_bars(8)) + "\n" + "|".join(generate_rest_bars(8)) + "||"
+        )
+    )
+    # print(generate_abc_score("|" + "|".join(generate_bars(8)) + "||"))

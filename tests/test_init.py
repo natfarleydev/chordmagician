@@ -1,4 +1,5 @@
 import random
+import re
 
 import pytest
 
@@ -51,11 +52,31 @@ def test_pick_random_chord__no_chord_twice_in_a_row(seed):
     assert chord3 != chord4
 
 
-@given(st.integers(), st.integers(min_value=1, max_value=30), st.integers(min_value=1, max_value=30))
+@given(
+    st.integers(),
+    st.integers(min_value=1, max_value=30),
+    st.integers(min_value=1, max_value=30),
+)
 @settings(max_examples=10)
 def test_generate_full_exercise(seed, lines, bars):
     random.seed(seed)
     assert generate_full_exercise(lines, bars)
+
+
+@given(
+    st.integers(),
+    st.integers(min_value=1, max_value=30),
+    st.integers(min_value=1, max_value=30),
+)
+def test_generate_full_exercise__check_no_line_continuation_has_same_chord(seed, lines, bars):
+    random.seed(seed)
+    exercise = generate_full_exercise(lines, bars)
+    starting_bars = re.findall(r'(?<=[]\n])\|".*?".*?\|', exercise)
+    ending_bars = re.findall(r'\|"[^|]+?"[^|]+?\|$', exercise, re.MULTILINE)
+    assert len(starting_bars) == len(ending_bars), "The test has failed to get the same number of starting bars as ending bars."
+    for end_bar, start_bar in zip(ending_bars[:-1], starting_bars[1:]):
+        assert end_bar != start_bar
+
 
 @given(st.integers(), st.integers(max_value=0), st.integers(max_value=0))
 @settings(max_examples=10)

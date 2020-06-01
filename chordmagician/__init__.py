@@ -59,9 +59,12 @@ def generate_bars(no_of_bars=32, *args, **kwargs) -> list:
 
     *args, **kwargs are passed to pick_random_chord(...).
 
+    The argument prev_chord is used for the first chord but ignored for
+    future chords.
+
     """
     bars = []
-    prev_chord = ""
+    prev_chord = kwargs.pop("prev_chord", "")
     for _ in range(no_of_bars):
         chord = pick_random_chord(*args, **kwargs, prev_chord=prev_chord)
         bar = generate_bar(chord)
@@ -130,11 +133,14 @@ def generate_full_exercise(no_of_lines: int = 2, bars_per_line: int = 8) -> str:
     if bars_per_line < 1:
         raise ValueError("bars_per_line should be greater than 0")
 
+
+    bars = generate_bars(no_of_lines*bars_per_line)
+
     return generate_abc_score(
         "\n".join(
             [
-                "|" + "|".join(generate_bars(bars_per_line)) + "|"
-                for _ in range(no_of_lines)
+                "|" + "|".join(bars[i*bars_per_line:(i+1)*bars_per_line]) + "|"
+                for i in range(no_of_lines)
             ]
         ),
         "\n".join(

@@ -21,12 +21,33 @@ CHORDS = {
     "Ab": ["Δ"],
 }
 
+WORDS = [
+    "courage",
+    "bravery",
+    "foolishness",
+    "mockery",
+    "interest",
+    "fantastic tale",
+    "rupture",
+    "adventure",
+    "heartbreak",
+    "pomplamoose",
+    "betrayal",
+]
 
-def pick_random_chord(chords=CHORDS, seed=None, prev_chord=""):
+
+def generate_random_title():
+    title = random.choice(animals)
+    if title[-1] == "s":
+        title = title + "' "
+    else:
+        title = title + "'s "
+    title += random.choice(WORDS)
+    return title
+
+
+def pick_random_chord(chords=CHORDS, prev_chord=""):
     """Picks a random chord given input (above)."""
-
-    if seed is not None:
-        random.seed(seed)
 
     ret_chord = prev_chord
     try_number = 0
@@ -39,8 +60,6 @@ def pick_random_chord(chords=CHORDS, seed=None, prev_chord=""):
         if try_number > 100:
             raise RuntimeError(f"Unable to find a different chord to {prev_chord}")
 
-    # if ret_chord == "":
-    #     raise RuntimeError("Um... not sure how this happened! ret_chord has not been set!")
     return ret_chord
 
 
@@ -55,23 +74,14 @@ def generate_bars(no_of_bars=32, *args, **kwargs) -> list:
 
     return bars
 
+
 def generate_rest_bars(no_of_bars=32, *args, **kwargs) -> list:
-    return ["z1"]*no_of_bars
-
-
-WORDS = [
-    "courage",
-    "bravery",
-    "foolishness",
-    "mockery",
-    "interest",
-    "fantastic tale",
-    "rupture",
-    "adventure",
-    "heartbreak",
-    "pomplamoose",
-    "betrayal",
-]
+    """Generates no_of_bars with semibreve rest in.
+    
+    *args, **kwargs are ignored; they are kept for compatibility with generate_bars.
+    
+    """
+    return ["z1"] * no_of_bars
 
 
 def generate_abc_score(
@@ -90,12 +100,7 @@ def generate_abc_score(
         bass_content = content
 
     if title is None:
-        title = random.choice(animals)
-        if title[-1] == "s":
-            title = title + "' "
-        else:
-            title = title + "'s "
-        title += random.choice(WORDS)
+        title = generate_random_title()
 
     return f"""
 X:{reference_number}
@@ -112,15 +117,38 @@ V:2
 
 
 def generate_bar(chord):
+    """Given a chord, generates a bar with a semibreve in and the chord symbol."""
     return f'"{chord}"  z1'
 
 
+def generate_full_exercise(no_of_lines: int = 2, bars_per_line: int = 8) -> str:
+    """Generates the content of a full exercise in ABC notation and returns it as a string.
+
+    no_of_lines: Number of lines for the exercise
+    bars_per_line: Number of bars per line
+    
+    """
+    if no_of_lines < 1:
+        raise ValueError("no_of_lines should be greater than 0")
+
+    if bars_per_line < 1:
+        raise ValueError("bars_per_line should be greater than 0")
+
+    return generate_abc_score(
+        "\n".join(
+            [
+                "|" + "|".join(generate_bars(bars_per_line)) + "|"
+                for _ in range(no_of_lines)
+            ]
+        ),
+        "\n".join(
+            [
+                "|" + "|".join(generate_rest_bars(bars_per_line)) + "|"
+                for _ in range(no_of_lines)
+            ]
+        ),
+    )
+
 
 def main():
-    print(
-        generate_abc_score(
-            "|" + "|".join(generate_bars(8)) + "\n" + "|".join(generate_bars(8)) + "||",
-            "|" + "|".join(generate_rest_bars(8)) + "\n" + "|".join(generate_rest_bars(8)) + "||"
-        )
-    )
-    # print(generate_abc_score("|" + "|".join(generate_bars(8)) + "||"))
+    print(generate_full_exercise())

@@ -1,9 +1,17 @@
 import random
 
+import pytest
+
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from chordmagician import pick_random_chord, generate_abc_score, generate_bars
+from chordmagician import (
+    pick_random_chord,
+    generate_abc_score,
+    generate_bars,
+    generate_random_title,
+    generate_full_exercise,
+)
 
 
 def test_pick_random_chord():
@@ -25,7 +33,8 @@ def test_generate_bars(seed):
 
 @given(st.integers())
 def test_pick_random_chord__with_seed(seed):
-    assert pick_random_chord(seed=seed)
+    random.seed(seed)
+    assert pick_random_chord()
 
 
 @given(st.integers())
@@ -40,3 +49,23 @@ def test_pick_random_chord__no_chord_twice_in_a_row(seed):
     assert chord1 != chord2
     assert chord2 != chord3
     assert chord3 != chord4
+
+
+@given(st.integers(), st.integers(min_value=1, max_value=30), st.integers(min_value=1, max_value=30))
+@settings(max_examples=10)
+def test_generate_full_exercise(seed, lines, bars):
+    random.seed(seed)
+    assert generate_full_exercise(lines, bars)
+
+@given(st.integers(), st.integers(max_value=0), st.integers(max_value=0))
+@settings(max_examples=10)
+def test_generate_full_exercise__raises_valueerror(seed, lines, bars):
+    random.seed(seed)
+    with pytest.raises(ValueError):
+        generate_full_exercise(lines, bars)
+
+
+@given(st.integers())
+def test_generate_random_title(seed):
+    random.seed(seed)
+    assert generate_random_title()

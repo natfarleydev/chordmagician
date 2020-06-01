@@ -1,25 +1,16 @@
 import logging
 import random
+import os 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
 from .animal_names import animals
 
 # TODO possibly replace this with a yaml file that is configurable
-CHORDS = {
-    "A": ["Δ"],
-    "Bb": ["Δ"],
-    "B": ["Δ"],
-    "C": ["Δ"],
-    "Db": ["Δ"],
-    "D": ["Δ"],
-    "Eb": ["Δ"],
-    "E": ["Δ"],
-    "F": ["Δ"],
-    "Gb": ["Δ"],
-    "G": ["Δ"],
-    "Ab": ["Δ"],
-}
+CHORDS = yaml.safe_load(open(os.path.join(dir_path, "config.yaml")))['chords']
 
 WORDS = [
     "courage",
@@ -64,6 +55,11 @@ def pick_random_chord(chords=CHORDS, prev_chord=""):
 
 
 def generate_bars(no_of_bars=32, *args, **kwargs) -> list:
+    """Generates a list of bars with random chord symbols.
+
+    *args, **kwargs are passed to pick_random_chord(...).
+
+    """
     bars = []
     prev_chord = ""
     for _ in range(no_of_bars):

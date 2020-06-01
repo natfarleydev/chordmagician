@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     name="chordmagician",
     version="0.3.0b0",
@@ -8,6 +9,7 @@ setup(
     author_email="nasfarley88",
     url="https://github.com/natfarleydev/chordmagician",
     packages=["chordmagician"],
+    package_data={"chordmagician": ["*.yaml"]},
     scripts=["scripts/chordmagician"],
     install_requries=[],  # All uses standard library
     extras_require={
@@ -40,4 +42,3 @@ setup(
         ]
     },
 )
-

@@ -30,7 +30,7 @@ setup(
             "py==1.8.1",
             "pylint==2.5.2",
             "pyparsing==2.4.7",
-            "pytest==5.4.2",
+            "pytest==9.0.3",
             "regex==2020.5.14",
             "rope==0.17.0",
             "six==1.15.0",
